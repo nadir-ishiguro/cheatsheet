@@ -1,0 +1,340 @@
+*cheatsheet.txt*    For Vim version 8.0 Lastr change: 2017
+*cheatsheet*
+
+# my vim cheat sheet
+
+ * "  is the system clipboard register
+    * :%y  copies file content into system clipboard
+ * edit! reads file from disk again (overwriting buffer)
+ * q: - command-line window!
+    * while in Ex: `<C-f>` switches to command-line window!
+    * q/ - opens command-line window with history of searches.
+ * `<C-d>` Show possible autocomplete options
+ * `<C-w> <C-u>` - del backw. to beginning of word/line
+ * `<C-r>(register)` - insert register content 
+ * :%s/Practical/Pragmatic/ - replace Practical with Pragmatic on every line
+ * :0m1 / :0c1 - movies/copies from 0 to 1. Replacable with many variables
+ * @: - Repeat last Ex command
+ * @@ can be used to repeat :@ as well as macros.
+ * ": holds most recently executed command
+ * `<C-r><C-w>` - copies word under cursor and inserts at command line prompt 
+ * `<C-g>` - echo name of current file
+ 
+#### Commandline:
+
+ * :! for one-off command
+ * :shell starts interactive session
+ * Better: use `<C-z>` to suspend vim and fg to wake it up again
+ * % means 'current file'
+ * :read !(cmnd) - puts cmd result into buffer (:write does the reverse)
+ * ** (starstar)wildcard - recurses downward into directories
+ 
+ * Filters:
+    * If given a range, :!{cmd} filters the [range] through the command. 
+    Example: :2,%!sort -t',' -k2 filters lines 2 to end of file through sort, 
+    using ',' as delimiters (-t',') and sorting by the second field (-k2)
+    * !{motion} in NORMAL mode prepopulates range with specified motion 
+
+#### Buffers
+
+ * :buffers             - buffer list
+ * `<C-^>`              - to switch between active and alternative file.
+ * [b / ]b              - jump to next/prev buffer (not standard behav)
+ * :buffer N            - jumps to buffer number N.
+ * :b[uffer] {buffname} - jumps to buffer, supports autocompletion
+
+#### Argument list
+
+ * :ar[gs]               - lists args,
+ * :args {sth}           - adds to args-list. Wildcards useful.
+ * ´(backtick) expansion - Example: :args ´cat .chapters´ would pipe cat result
+                           into :args.
+ * :next / :prev         - moves between files
+
+#### Backtick Expansion
+
+#### Windows
+
+ * `<C-w>s / <C-w>`            - split window hor/vert
+ * :split/vsplit {filename}  - splits hor/ver and opens file in other split
+ * `:clo /<C-w>c`              - close active window
+ * `:on / <C-w>o`              - keep only the active window
+ * vimcast.org/e/7 or /9 for window rearranging
+ 
+#### Tabs
+
+ * :tabe[dit]        - open new file in tab
+ * :tabc[lose]       - cl current tab incl all its windows
+ * :tabo[nly]        - closes all other tabs
+ * :lcd {path}       - sets working directory for current window
+ * :windo lcd {path} - sets working directory for all windows in tab
+ * `<C-w>T`          - opens current window in a new tab page (if more than 
+                       window exist)
+ * gt / gT           - jump to next tab / prev tab. If prefixed with number, jump to 
+                       tab of that number
+ * :tabmove [N]      - move cur tab. 0 mv to beginning, no [N] mv to end
+
+### Chapter 7 - open files and save to disk
+
+##### :edit
+
+ * :e[dit] `%<Tab>`   - % = filepath of active buffer.
+ * :e[dit] `%:h<Tab>` - This enables you to open a file in the same directory as 
+                        the active buffer.
+ * :e[dit] %%         - Same function as :edit %:h<Tab>. Custom mapping.
+ * look up 'Easy Expansion of the Active File Directory' for shortcut suggestions
+
+
+##### :find
+
+ * :set path ={directory}/** - adds directory incl. subdirs to path
+ 
+##### netrw
+
+ * :E[explore] / :e[dit]. - open netrw in pwd
+ * :Sexplore / :Vexplore  - open file explorer in hor/ver split window
+ * netrw-%                - create new file
+ * netrw-d                - create new directory
+ * netrw-rename           - rename fiel/directory 
+ * `<D>` in netrw         - delete file/directory
+ * netrw can edit files over network using scp, ftp, curl, wget.
+
+##### Save Files to Nonexistent Directories
+
+ * :!mkdir -p %:h - create missing intermediate directories
+ 
+##### Save a File as the Super User
+
+ * :w !sudo tee % > /dev/null 
+
+## Part 3 -  Getting Around Faster 
+
+### Chapter 8 - Navigate Inside Files with Motions
+
+#### Distinguish Between Real Lines and Display Lines
+
+ * gj,gk,g0,etc - move display lines instead of real lines
+
+#### Move Word-Wise
+
+ * WORDS - seperated by whitespace
+
+#### Find by Character
+
+ * ;   - repeat search
+ * ,   - repeat search in opposite direction
+ * F/T - backward to previous occurence of {char}/right after that
+ * author uses t/T in operator pending mode, f/F in normal mode
+
+#### Search to Navigate
+
+ * d/{characters}`<CR>` - deletes till result
+ * v/{characters}       - selects till result
+
+#### Trace Your Selection with Precision Text Objects
+
+ * a) / ab | i) / ib - around/inside parentheses
+ * a} / aB | i} / iB - around/inside braces
+
+#### Delete Around, or Change Inside
+
+ * iw/aw - a{object} | {object} space(s)
+ * iW/aW -     "     |         "
+ * is/as -     "     |         "
+ * ip/ap -     "     |         "
+ * d{motion} works well with a{obj}
+ * i{motion} works well with c{obj}
+
+#### Mark Your Place and Snap Back to It
+
+ * lowercase marks      - local
+ * uppercase marks      - global
+ * `'{mark}`            - moves to line
+ * <`{mark}>            - moves to exact position (column&line)
+ * `''`                 - Position before the last jump within current file
+ * `'.`                 - location of last change
+ * `'^`                 - location of last insertion
+ * `'[`                 - start of last change or yank
+ * `']`                 - end of last change or yank
+ * `'<`                 - start of last visual selection
+ * `'>`                 - end of last visual selection
+
+#### Jump Between Matching Parentheses
+
+ * %     - jumps between opening and closing paris of parentheses
+ * ysiw" - if surround.vim is activated, this surrounds selected word with "
+ 
+### Chapter 9 -  Navigate between Files with Jumps
+
+#### Traverse the Jump List
+
+ * motions         - move _within_ a file
+ * jumps           - can move _between_ files
+ * :jumps          - shows jump list
+ * `( / )`             - jump to start of prev/next sentence
+ * `{ / }`             - jump to start of prev/next paragraph
+ * H/M/L           - jump to top/middle/bottom of screen
+ * gf              - jump to file name under the cursor
+ * `<C-]>`           - jump to definition of keyword under the cursor
+ * `'{mark}/``{mark}` - jump to line of mark / to exact cursor pos of mark 
+
+#### Traverse the Change List
+
+ * :changes - shows change list
+ * g;       - move backwards in change list
+ * g,       - move forewardsd in change list
+ * gi       - moves to ````^ mark  and enters Insert mode
+
+#### Jump to the Filename Under the Cursor
+
+ * gf                   - jump to file named under cursor
+ * set suffixesadd =.rb - adds suffix (here .rb). gf now finds a file named core.rb
+                          even if it is referred to as 'core' in the file. Vim does 
+                          this often automatically, if file-type plugin on. 
+ * files have to be in path. 
+
+#### Snap Between Files Using Global Marks
+
+ * m{uppercaseletter} - sets global mark. Global marks persist between editing 
+                        sessions.
+
+## Part 4 - Registers
+
+### Chapter 10 - Copy and Paste
+
+#### Delete, Yank, and put with Vim's Unnamed Register
+
+ * xp          - quick way to transpose this and the next characters
+ * ddp         - quick way to transpose this and the next line
+ * yyp         - duplicate current line
+ * P           - paste in front of cursor
+ * "_d{motion} - performs true deletion, as "_ is the "black hole" register.
+
+#### Grok Vim's Registers
+
+* "0 - yank register. Only changes through use of y{motion}, not through x,s,c,d.
+* "A - appends to register a, whereas "a overwrites the register.
+* "* - x11 primary. (second clipboard not available in macOS/Win)
+* "  - system clipboard
+* "% - name of current file
+* "# - name of alternate file
+* ". - last inserted text
+* ": - last ex command
+* "/ - last search pattern
+
+#### Replace a Visual Selection with a Register
+
+ * p in visual mode - replaces visual selection with register. Avoids use of d.
+                      visual selection in document _swaps places_ with text in 
+                      register. Can be used to swap two words/lines
+
+#### Paste from a Register
+
+ * `(INS mode) <C-r>"/<C-r>0` - paste in front of cursor. 
+ * p / P                      - puts text after (p) or before (P) the cursor, 
+                                below (p) or above (P) current line.
+ * gp / gP                    - paste and position cursor at end of line,
+                                especially useful with ranges of lines
+
+#### Interact with the System Clipboard
+
+ * :set `pastetoggle=<f6>` - pastetoggle turns the paste mode on/off, usefule for
+                             pasting from system clipboard. Can be neglected if 
+                             ones uses the "  register.
+
+### Chapter 11 - Macros
+
+#### Record and Execute a Macro
+
+ * :reg {register} - shows content of register. ^[ = escape 
+ * macros can be executed either in parallel or in sequence. More about that later.
+
+#### Normalize, Strike, Abort
+
+ * use the search, word/paragraph wise motions to ensure repeatability, reliability. 
+
+#### Play Back with a Count
+
+ * 22@{register} - repeats macro 22 times. 
+ 
+#### Repeat a Change on Contiguous Lines
+
+ * using visual mode to select multiple lines, one can execute a macro in parallel.
+
+#### Append Commands to a Macro
+
+ * qA (Capital register) - Append to register. Can be used to add to macro.
+
+#### Act Upon a Collection of Files
+
+ * set hidden       - should be set before any :argdo command to enable changes 
+                      without saving first.
+ * :edit!           - reverses last edit after recording of macro. Avoids applying 
+                      macro twice. Does not work if :w has already executed.
+ * :argdo normal @a - executes macro a in all files in :arg. 
+ * :next            - Execute macro *in series* by appending :next. This way
+                      a single macro can be executed n times and aborts once it 
+                      reaches the last buffer in the arglist eg 22@a.
+ * :wall / :wa      - saves all files in **buffer** list, **not** in arglist.
+ * :wn[ext]         - writes buffer and moves to next buffer in arglist.
+ * Benefits         - running argdo normal in parallel is faster, but conceils
+                      possible errors. Running the macro in series stops in case
+                      of an error and lets us correct it.
+
+#### Evaluate an Iterator to Number Items in a List
+
+ * let i=1              - set i to 1
+ * qa                   - record macro a
+ * `I<C-r>=i<CR>)<Esc>` - Insert number i at beginning of line, followed by ). 
+                          Increment i by 1, stop recording.
+ * :(lines)normal @a    - mark lines and execute 
+ 
+#### Edit the Contents of a Macro
+
+ * `<80>kb`     - represents backspace
+ * `<C-[>`      - represents escape
+ * :put a       - pastes register a under current line. Alternative: "ap.
+ * "add / :d a  - simplest way to yank back into register, but problematic. Line-wise
+                  deletion could pot change meaning of macro. Character-wise is safer.
+ * 0, then "ay$ - this avoids yanking the `<CR>`.
+
+## Part 5 - Patterns
+
+### Chapter 12 - Matching Patterns and Literals
+
+#### Tune the Case Sensitivity of Search Patterns
+
+ * :set ignorecase - deactivates case sensitivity in search
+ * \C and \c       - \C activates case sensitiviy, \c deactivates it
+                     this works at **any place**, so can be tacked on at the end of a 
+                     search.
+ * :set smartcase  - smartcase turns on case sensitivity if we add a capital letter
+                     to the search. 
+
+#### Use the \v Pattern Switch for Regex Searches
+
+ * `\v`               - turns on very magic search, in which all characters except
+                      -, letters and numbers (and #) take on special meaning.
+ * `\v#(\x{6}|\x{3})` - example 
+
+#### Use the \V Literal Switch for Verbatim Searches
+
+ * \V - very nomagic search. Removes special meaning from most special characters.
+        Useful for verbatim search.
+
+#### Use Parentheses to Capture Submatches
+
+ * `/\v<(\w )\_s \1>` - matches dupblicate words, no matter where in the text. Useful
+                      to find lexical illusions.
+
+#### Stake the Boundaries of a Word
+
+ * `< / >`    - if combined with \v, they delimit a word. Represent whitesp/punct around
+                word. 
+ * `/\v<the>` - would search for the, but not these, there, etc.
+ * * / #      - these commands add delimiters automatically.a
+
+#### Stake the Boundaries of a Match
+
+ * 
+ 
